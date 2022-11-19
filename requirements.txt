@@ -1,0 +1,7 @@
+torch>=1.12
+torchvision
+numpy
+tqdm
+tensorboard>=2.9.1
+scikit-learn
+pandas

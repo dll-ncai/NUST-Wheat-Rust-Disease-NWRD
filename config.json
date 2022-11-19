@@ -1,0 +1,54 @@
+{
+    "name": "P-128",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "UNet",
+        "args": {
+            "n_channels": 3,
+            "n_classes": 2
+        }
+    },
+    "data_loader": {
+        "type": "PatchedDataLoader",
+        "args":{
+            "data_dir": "/scratch/sukhan/wrs-d20ds/",
+            "patch_size": 128,
+            "batch_size": 64,
+            "shuffle": true,
+            "validation_split": 0.1,
+            "num_workers": 8
+        }
+    },
+    "optimizer": {
+        "type": "RMSprop",
+        "args":{
+            "lr": 1e-6,
+            "weight_decay": 0
+        }
+    },
+    "loss": "focal_loss",
+    "metrics": [
+        "precision",
+        "recall",
+        "f1_score"
+    ],
+    "lr_scheduler": {
+        "type": "ExponentialLR",
+        "args": {
+            "gamma": 0.998
+        }
+    },
+    "trainer": {
+        "epochs": 500,
+
+        "save_dir": "/scratch/sukhan/wrs/saved/",
+        "save_period": 1,
+        "verbosity": 2,
+        
+        "monitor": "min val_loss",
+        "early_stop": 50,
+
+        "tensorboard": true
+    }
+}
