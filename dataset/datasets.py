@@ -34,5 +34,6 @@ class PatchedDataset(BaseDataset):
 
         img_patch = self.patches.get_patch(img, patch)
         mask_patch = self.patches.get_patch(mask, patch)
-        img_patch, mask_patch = self.rand_transform((img_patch, mask_patch.unsqueeze(dim=0)))
+        img_patch, mask_patch = self.rand_transform(
+            (img_patch, mask_patch.unsqueeze(dim=0)))
         return img_patch, mask_patch.squeeze(dim=0)
