@@ -18,9 +18,10 @@ class Patches(UserList):
         self.size = size
         self.stride = stride if stride is not None else size
 
-    def create(self, index, data, cond_fn=None):
-        for x in range(0, data.size(-2) - self.size + 1, self.stride):
-            for y in range(0, data.size(-1) - self.size + 1, self.stride):
+    def create(self, index, data, cond_fn=None, overlap=True):
+        stride = self.stride if overlap else self.size
+        for x in range(0, data.size(-2) - self.size + 1, stride):
+            for y in range(0, data.size(-1) - self.size + 1, stride):
                 patch = Patch(index, x, y)
                 if cond_fn is None or cond_fn(data, patch):
                     self.append(patch)

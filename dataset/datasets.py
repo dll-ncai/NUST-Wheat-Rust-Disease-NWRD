@@ -14,17 +14,19 @@ class PatchedDataset(BaseDataset):
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
         rand_transform: Optional[Callable] = None,
-        train: bool = True
+        train: bool = True,
+        late_init: bool = False
     ) -> None:
         super().__init__(root, pil_loader, transforms, transform, target_transform, train)
         self.patches = Patches(patch_size)
         self.rand_transform = TransformMultiple(rand_transform)
-        self.make_dataset()
+        if not late_init:
+            self.make_dataset()
 
-    def make_dataset(self):
+    def make_dataset(self, valid_indices=[]):
         for idx in range(super().__len__()):
             _, mask = super().__getitem__(idx)
-            self.patches.create(idx, mask)
+            self.patches.create(idx, mask, overlap=idx not in valid_indices)
 
     def __getitem__(self, index: int) -> Any:
         patch = self.patches[index]
