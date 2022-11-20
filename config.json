@@ -1,5 +1,5 @@
 {
-    "name": "P-128",
+    "name": "AP-32",
     "n_gpu": 1,
 
     "arch": {
@@ -15,6 +15,8 @@
             "data_dir": "/scratch/sukhan/wrs-d20ds/",
             "patch_size": 128,
             "batch_size": 64,
+            "patch_stride": 32,
+            "target_dist": 0.01,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 8
@@ -41,6 +43,7 @@
     },
     "trainer": {
         "epochs": 500,
+        "adaptive_step": 5,
 
         "save_dir": "/scratch/sukhan/wrs/saved/",
         "save_period": 1,

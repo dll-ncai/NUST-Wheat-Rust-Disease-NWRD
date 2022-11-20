@@ -23,7 +23,7 @@ class PatchedDataset(BaseDataset):
         super().__init__(root, pil_loader, transforms, transform, target_transform, train)
         self.patches = Patches(patch_size, patch_stride)
         self.preds = preds
-        self.target_dist = target_dist
+        self.target_dist = target_dist / patch_size ** 2 if target_dist is not None else 0
         self.rand_transform = TransformMultiple(rand_transform)
         if not late_init:
             self.make_dataset()
