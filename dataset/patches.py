@@ -29,7 +29,8 @@ class Patches(UserList):
     def get_patch(self, data, patch: Patch):
         assert data.ndim in {2, 3}, 'only 2-D and 3-D Tensors are supported.'
         _data = data.unsqueeze(dim=0) if data.ndim == 2 else data
-        data_patch = _data[:, patch.x:patch.x + self.size, patch.y:patch.y + self.size]
+        data_patch = _data[:, patch.x:patch.x +
+                           self.size, patch.y:patch.y + self.size]
         return data_patch.squeeze(dim=0) if data.ndim == 2 else data_patch
 
     def store_data(self, indices, data):

@@ -10,6 +10,9 @@ class PatchedDataLoader(BaseDataLoader):
         data_dir,
         patch_size,
         batch_size,
+        patch_stride=None,
+        preds=None,
+        target_dist=None,
         shuffle=True,
         validation_split=0.0,
         num_workers=1,
@@ -17,7 +20,8 @@ class PatchedDataLoader(BaseDataLoader):
     ):
         trsfm = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.3551, 0.4698, 0.2261), (0.1966, 0.1988, 0.1761))
+            transforms.Normalize((0.3551, 0.4698, 0.2261),
+                                 (0.1966, 0.1988, 0.1761))
         ])
         target_trsfm = transforms.Compose([
             transforms.ToTensor(),
@@ -30,6 +34,9 @@ class PatchedDataLoader(BaseDataLoader):
         self.dataset = PatchedDataset(
             self.data_dir,
             patch_size,
+            patch_stride=patch_stride,
+            preds=preds,
+            target_dist=target_dist,
             transform=trsfm,
             target_transform=target_trsfm,
             rand_transform=rand_trsfm if training and shuffle else None,
