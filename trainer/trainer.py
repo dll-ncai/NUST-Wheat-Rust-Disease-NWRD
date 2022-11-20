@@ -21,6 +21,7 @@ class Trainer(BaseTrainer):
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
+        self.adaptive_step = config['trainer']['adaptive_step']
 
         self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
         self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
@@ -32,6 +33,30 @@ class Trainer(BaseTrainer):
         :param epoch: Integer, current training epoch.
         :return: A log that contains average loss and metric in this epoch.
         """
+        if epoch > self.adaptive_step and epoch % self.adaptive_step == 1:
+            dataset = self.data_loader.inference.dataset
+            self.model.eval()
+            with torch.no_grad():
+                for batch_idx, (data, target, patch_idx) in enumerate(self.data_loader.inference):
+                    data, target = data.to(self.device), target.to(self.device)
+
+                    output = self.model(data)
+                    pred = torch.argmax(output, dim=1)
+
+                    self.writer.next('inference')
+                    if batch_idx % self.log_step == 0:
+                        self.writer.add_image(
+                            'output',
+                            make_grid(pred.unsqueeze(1).float().cpu(), nrow=8, normalize=True)
+                        )
+
+                    dataset.patches.store_data(patch_idx, [pred.unsqueeze(1)])
+            preds = [dataset.patches.fuse_data(idx, data_idx=0)[0].cpu()
+                for idx in range(len(dataset.data))]
+
+            self.data_loader.update_dataset(preds)
+            self.len_epoch = len(self.data_loader)
+
         self.model.train()
         self.train_metrics.reset()
         for batch_idx, (data, target) in enumerate(self.data_loader):

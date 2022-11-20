@@ -26,6 +26,17 @@ def main(config):
     data_loader = config.init_obj('data_loader', module_data)
     valid_data_loader = data_loader.split_validation()
 
+    # setup data_loader for inference
+    data_loader.inference = getattr(module_data, config['data_loader']['type'])(
+        config['data_loader']['args']['data_dir'],
+        patch_size=config['data_loader']['args']['patch_size'],
+        batch_size=config['data_loader']['args']['batch_size'],
+        shuffle=False,
+        validation_split=0.0,
+        training=True,
+        num_workers=config['data_loader']['args']['num_workers']
+    )
+
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
     logger.info(model)
