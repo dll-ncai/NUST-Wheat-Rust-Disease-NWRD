@@ -1,7 +1,7 @@
 from base import BaseDataLoader
 from dataset.datasets import PatchedDataset
 from torchvision import transforms
-from torch.utils.data.sampler import SubsetRandomSampler
+from torch.utils.data.sampler import SequentialSampler
 
 
 class PatchedDataLoader(BaseDataLoader):
@@ -63,7 +63,7 @@ class PatchedDataLoader(BaseDataLoader):
         if valid_sampler is not None:
             train_sampler.indices, valid_sampler.indices = train_idx, valid_idx
         else:
-            train_sampler = SubsetRandomSampler(train_idx)
+            train_sampler = SequentialSampler(train_idx)
 
         self.n_samples = len(train_idx)
 
