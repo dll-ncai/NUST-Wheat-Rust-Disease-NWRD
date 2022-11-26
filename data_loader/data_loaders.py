@@ -12,7 +12,7 @@ class PatchedDataLoader(BaseDataLoader):
         batch_size,
         patch_stride=None,
         preds=None,
-        target_dist=None,
+        target_dist=0.0,
         shuffle=True,
         validation_split=0.0,
         num_workers=1,
@@ -68,3 +68,12 @@ class PatchedDataLoader(BaseDataLoader):
         self.n_samples = len(train_idx)
 
         return train_sampler, valid_sampler
+
+    def update_dataset(self, preds):
+        self.dataset.preds = preds
+        train_sampler, valid_sampler = self._split_sampler(
+            self.validation_split)
+
+        self.sampler.indices = train_sampler.indices
+        if valid_sampler is not None:
+            self.valid_sampler.indices = valid_sampler.indices
