@@ -29,6 +29,7 @@ class TensorboardWriter():
 
         self.step = 0
         self.mode = ''
+        self.step_tracker = {}
 
         self.tb_writer_ftns = {
             'add_scalar', 'add_scalars', 'add_image', 'add_images', 'add_audio',
@@ -46,6 +47,10 @@ class TensorboardWriter():
             duration = datetime.now() - self.timer
             self.add_scalar('steps_per_sec', 1 / duration.total_seconds())
             self.timer = datetime.now()
+
+    def next(self, mode='train'):
+        step = self.step_tracker[mode] = self.step_tracker.get(mode, 0) + 1
+        self.set_step(step, mode=mode)
 
     def __getattr__(self, name):
         """
