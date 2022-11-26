@@ -12,7 +12,7 @@ class PatchedDataset(BaseDataset):
         patch_size: int,
         patch_stride: int = None,
         preds: list = None,
-        target_dist: int = None,
+        target_dist: float = 0.0,
         transforms: Optional[Callable] = None,
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
@@ -23,7 +23,7 @@ class PatchedDataset(BaseDataset):
         super().__init__(root, pil_loader, transforms, transform, target_transform, train)
         self.patches = Patches(patch_size, patch_stride)
         self.preds = preds
-        self.target_dist = target_dist / patch_size ** 2 if target_dist is not None else 0
+        self.target_dist = target_dist * patch_size ** 2
         self.rand_transform = TransformMultiple(rand_transform)
         if not late_init:
             self.make_dataset()
@@ -33,8 +33,8 @@ class PatchedDataset(BaseDataset):
             _, mask = super().__getitem__(idx)
             if self.preds is not None:
                 mask = self._union_mask(mask, self.preds[idx])
-            self.patches.create(idx, mask, cond_fn=self._dist_fn,
-                                overlap=idx not in valid_indices)
+            self.patches.create(idx, mask, cond_fn=self._dist_fn if self.target_dist != 0.0
+                                else None, no_overlap=idx in valid_indices)
 
     def __getitem__(self, index: int) -> Any:
         patch = self.patches[index]
