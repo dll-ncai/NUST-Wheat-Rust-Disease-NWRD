@@ -20,8 +20,8 @@ class BaseDataset(VisionDataset):
         self.loader = loader
 
         mode = 'train' if train else 'test'
-        self.data = glob.glob(f'{mode}/images/*.jpg', root_dir=root)
-        self.masks = glob.glob(f'{mode}/masks/*.png', root_dir=root)
+        self.data = sorted(glob.glob(f'{mode}/images/*.jpg', root_dir=root))
+        self.masks = sorted(glob.glob(f'{mode}/masks/*.png', root_dir=root))
 
     def __getitem__(self, index: int) -> Any:
         img_path, mask_path = self.data[index], self.masks[index]
