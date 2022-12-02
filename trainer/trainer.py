@@ -49,7 +49,7 @@ class Trainer(BaseTrainer):
                     pred = torch.argmax(output, dim=1)
                     dataset.patches.store_data(patch_idx, [pred.unsqueeze(1)])
 
-            preds = [dataset.patches.fuse_data(idx, data_idx=0)[0].cpu()
+            preds = [dataset.patches.combine(idx, data_idx=0)[0].cpu()
                     for idx in range(len(dataset.data))]
 
             self.data_loader.update_dataset(preds)

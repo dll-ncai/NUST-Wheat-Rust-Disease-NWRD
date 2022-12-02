@@ -40,7 +40,7 @@ class Patches(UserList):
     def retrieve_data(self, indices):
         return [[self[idx].data[i] for idx in indices] for i in range(len(self[indices[0]].data))]
 
-    def fuse_data(self, index: int, data_idx: int):
+    def combine(self, index: int, data_idx: int):
         indices = [self.index(patch) for patch in self if patch.idx == index]
         indices.sort(key=lambda idx: (self[idx].x, self[idx].y))
 

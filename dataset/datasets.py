@@ -33,8 +33,12 @@ class PatchedDataset(BaseDataset):
             _, mask = super().__getitem__(idx)
             if self.preds is not None:
                 mask = self._union_mask(mask, self.preds[idx])
-            self.patches.create(idx, mask, cond_fn=self._dist_fn if self.target_dist != 0.0
-                                else None, no_overlap=idx in valid_indices)
+
+            if idx not in valid_indices:
+                self.patches.create(idx, mask, cond_fn=self._dist_fn
+                                    if self.target_dist != 0.0 else None)
+            else:
+                self.patches.create(idx, mask, no_overlap=True)
 
     def __getitem__(self, index: int) -> Any:
         patch = self.patches[index]

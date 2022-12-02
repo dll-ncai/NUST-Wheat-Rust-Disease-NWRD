@@ -74,6 +74,6 @@ class PatchedDataLoader(BaseDataLoader):
         train_sampler, valid_sampler = self._split_sampler(
             self.validation_split)
 
-        self.sampler.indices = train_sampler.indices
         if valid_sampler is not None:
             self.valid_sampler.indices = valid_sampler.indices
+        self.sampler.indices = train_sampler.indices
