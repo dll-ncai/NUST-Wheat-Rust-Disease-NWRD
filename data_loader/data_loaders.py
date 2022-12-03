@@ -71,9 +71,11 @@ class PatchedDataLoader(BaseDataLoader):
 
     def update_dataset(self, preds):
         self.dataset.preds = preds
+        self.dataset.patches.clear()
+        self.n_samples = len(self.dataset)
+
         train_sampler, valid_sampler = self._split_sampler(
             self.validation_split)
-
         if valid_sampler is not None:
             self.valid_sampler.indices = valid_sampler.indices
         self.sampler.indices = train_sampler.indices
