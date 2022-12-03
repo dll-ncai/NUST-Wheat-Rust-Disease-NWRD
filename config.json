@@ -1,5 +1,5 @@
 {
-    "name": "P-128",
+    "name": "WRS_Base",
     "n_gpu": 1,
 
     "arch": {
@@ -12,7 +12,7 @@
     "data_loader": {
         "type": "PatchedDataLoader",
         "args":{
-            "data_dir": "/scratch/sukhan/wrs-d20ds/",
+            "data_dir": "/scratch/sukhan/wrs-dds-cv/",
             "patch_size": 128,
             "batch_size": 64,
             "shuffle": true,
