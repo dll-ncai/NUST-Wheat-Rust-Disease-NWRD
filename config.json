@@ -1,5 +1,5 @@
 {
-    "name": "AP-CV",
+    "name": "WRS_Adaptive_Patching",
     "n_gpu": 1,
 
     "arch": {

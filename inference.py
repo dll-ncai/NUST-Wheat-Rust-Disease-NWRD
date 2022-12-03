@@ -55,7 +55,7 @@ def main(config):
             data_loader.dataset.patches.store_data(
                 patch_idx, [pred.unsqueeze(1)])
 
-    preds = [(data_loader.dataset.patches.fuse_data(idx, data_idx=0).cpu(),
+    preds = [(data_loader.dataset.patches.combine(idx, data_idx=0).cpu(),
               data_loader.dataset.data[idx])
              for idx in range(len(data_loader.dataset.data))]
     trsfm = transforms.ToPILImage()
