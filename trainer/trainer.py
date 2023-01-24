@@ -66,7 +66,6 @@ class Trainer(BaseTrainer):
             loss.backward()
             self.optimizer.step()
 
-            self.writer.next()
             self.train_metrics.update('loss', loss.item())
             for met in self.metric_ftns:
                 self.train_metrics.update(met.__name__, met(output, target))
@@ -81,6 +80,9 @@ class Trainer(BaseTrainer):
 
             if batch_idx == self.len_epoch:
                 break
+        
+        self.writer.next()
+        self.train_metrics.add_scalers()
         log = self.train_metrics.result()
 
         if self.do_validation:
@@ -107,7 +109,6 @@ class Trainer(BaseTrainer):
                 output = self.model(data)
                 loss = self.criterion(output, target)
 
-                self.writer.next('valid')
                 self.valid_metrics.update('loss', loss.item())
                 for met in self.metric_ftns:
                     self.valid_metrics.update(
@@ -118,6 +119,9 @@ class Trainer(BaseTrainer):
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
             self.writer.add_histogram(name, p, bins='auto')
+        
+        self.writer.next('valid')
+        self.valid_metrics.add_scalers()
         return self.valid_metrics.result()
 
     def _progress(self, batch_idx):

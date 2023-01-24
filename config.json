@@ -12,7 +12,7 @@
     "data_loader": {
         "type": "PatchedDataLoader",
         "args":{
-            "data_dir": "/scratch/sukhan/wrs-dds-cv/",
+            "data_dir": "/scratch/sukhan/wrs/datads-cv/",
             "patch_size": 128,
             "batch_size": 64,
             "patch_stride": 32,
