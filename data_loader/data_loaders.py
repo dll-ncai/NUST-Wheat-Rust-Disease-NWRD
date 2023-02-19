@@ -65,6 +65,8 @@ class PatchedDataLoader(BaseDataLoader):
         else:
             train_sampler = SequentialSampler(train_idx)
 
+        # turn off shuffle option which is mutually exclusive with sampler
+        self.shuffle = False
         self.n_samples = len(train_idx)
 
         return train_sampler, valid_sampler
