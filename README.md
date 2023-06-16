@@ -1,5 +1,31 @@
-# NUST Wheat Rust Segmentation using Suppervised Deep Learning
-Semantic segmentation of wheat yellow/stripe rust images to segment out rust and non-rust pixels using supervised deep learning.
+# NUST Wheat Rust Disease (NWRD): Dataset and Segmentation using Suppervised Deep Learning
+Semantic segmentation of wheat yellow/stripe rust disease images to segment out rust and non-rust pixels using supervised deep learning.
+
+This repo contains the source code for the study presented in the work:
+`The NWRD Dataset: An Open-Source Annotated Segmentation Dataset of Diseased Wheat Crop`.
+
+## Dataset
+The NWRD dataset is a real-world segmentation dataset of wheat rust diseased and healthy leaf images specifically constructed for semantic segmentation of wheat rust disease.
+The NWRD dataset consists of 100 images in total at this moment.
+
+Sample images from The NWRD dataset; annotated images showing rust disease along with their binary masks:
+![Sample images from The NWRD dataset; annotated images showing rust disease along with their binary masks](https://github.com/saadulkh/nwrd/assets/38633812/c8677336-82a0-4637-a3f8-61f5cedbad37)
+
+
+Dataset is available at: https://dll.seecs.nust.edu.pk/downloads/
+
+### Directory Structure
+The NWRD dataset images are available in `.jpg` format and the annotated binary masks are available in `.png` format. Below is the directory structure of this dataset:
+```
+NWRD
+├── test
+│   ├── images
+│   └── masks
+└── train
+    ├── images
+    └── masks
+```
+
 
 ## Requirements
 * Python
@@ -17,7 +43,7 @@ Use `python train.py -c config.json` to run code.
 
 ### Config file format
 Config files are in `.json` format:
-```javascript
+```json
 {
     "name": "WRS",                          // training session name
     "n_gpu": 1,                             // number of GPUs to use for training.
