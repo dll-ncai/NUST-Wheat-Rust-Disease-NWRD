@@ -1,4 +1,4 @@
-# NUST Wheat Rust Disease (NWRD): Dataset and Segmentation using Suppervised Deep Learning
+# NUST Wheat Rust Disease (NWRD): Semantic Segmentation using Suppervised Deep Learning
 Semantic segmentation of wheat yellow/stripe rust disease images to segment out rust and non-rust pixels using supervised deep learning.
 
 This repo contains the source code for the study presented in the work:
@@ -43,7 +43,7 @@ Use `python train.py -c config.json` to run code.
 
 ### Config file format
 Config files are in `.json` format:
-```json
+```javascript
 {
     "name": "WRS",                          // training session name
     "n_gpu": 1,                             // number of GPUs to use for training.
