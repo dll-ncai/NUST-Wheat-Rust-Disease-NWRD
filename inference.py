@@ -49,11 +49,14 @@ def main(config):
             output = model(data)
 
             batch_size = data_loader.batch_size
-            indices = torch.arange(batch_size * i, batch_size * i + data.shape[0])
+            patch_idx = torch.arange(
+                batch_size * i, batch_size * i + data.shape[0])
             pred = torch.argmax(output, dim=1)
-            data_loader.dataset.patches.store_data(indices, [pred.unsqueeze(1)])
+            data_loader.dataset.patches.store_data(
+                patch_idx, [pred.unsqueeze(1)])
 
-    preds = [(data_loader.dataset.patches.fuse_data(idx, 0).cpu(), data_loader.dataset.data[idx])
+    preds = [(data_loader.dataset.patches.combine(idx, data_idx=0).cpu(),
+              data_loader.dataset.data[idx])
              for idx in range(len(data_loader.dataset.data))]
     trsfm = transforms.ToPILImage()
 
@@ -105,7 +108,8 @@ if __name__ == '__main__':
     # custom cli options to modify configuration from default values given in json file.
     CustomArgs = collections.namedtuple('CustomArgs', 'flags type target')
     options = [
-        CustomArgs(['--data_dir'], type=str, target='data_loader;args;data_dir')
+        CustomArgs(['--data_dir'], type=str,
+                   target='data_loader;args;data_dir')
     ]
     config = ConfigParser.from_args(args, options)
     main(config)

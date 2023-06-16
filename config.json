@@ -1,5 +1,5 @@
 {
-    "name": "P-128",
+    "name": "WRS_Adaptive_Patching",
     "n_gpu": 1,
 
     "arch": {
@@ -12,9 +12,11 @@
     "data_loader": {
         "type": "PatchedDataLoader",
         "args":{
-            "data_dir": "/scratch/sukhan/wrs-d20ds/",
+            "data_dir": "/scratch/sukhan/wrs/datads-cv/",
             "patch_size": 128,
             "batch_size": 64,
+            "patch_stride": 32,
+            "target_dist": 0.01,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 8
@@ -41,6 +43,7 @@
     },
     "trainer": {
         "epochs": 500,
+        "adaptive_step": 5,
 
         "save_dir": "/scratch/sukhan/wrs/saved/",
         "save_period": 1,

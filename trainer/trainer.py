@@ -21,9 +21,12 @@ class Trainer(BaseTrainer):
         self.do_validation = self.valid_data_loader is not None
         self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
+        self.adaptive_step = config['trainer']['adaptive_step']
 
-        self.train_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
-        self.valid_metrics = MetricTracker('loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
+        self.train_metrics = MetricTracker(
+            'loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
+        self.valid_metrics = MetricTracker(
+            'loss', *[m.__name__ for m in self.metric_ftns], writer=self.writer)
 
     def _train_epoch(self, epoch):
         """
@@ -32,6 +35,26 @@ class Trainer(BaseTrainer):
         :param epoch: Integer, current training epoch.
         :return: A log that contains average loss and metric in this epoch.
         """
+        if epoch > self.adaptive_step and epoch % self.adaptive_step == 1:
+            dataset = self.data_loader.inference.dataset
+            self.model.eval()
+            with torch.no_grad():
+                for batch_idx, (data, target) in enumerate(self.data_loader.inference):
+                    data, target = data.to(self.device), target.to(self.device)
+                    output = self.model(data)
+
+                    batch_size = self.data_loader.inference.batch_size
+                    patch_idx = torch.arange(
+                        batch_size * batch_idx, batch_size * batch_idx + data.shape[0])
+                    pred = torch.argmax(output, dim=1)
+                    dataset.patches.store_data(patch_idx, [pred.unsqueeze(1)])
+
+            preds = [dataset.patches.combine(idx, data_idx=0)[0].cpu()
+                    for idx in range(len(dataset.data))]
+
+            self.data_loader.update_dataset(preds)
+            self.len_epoch = len(self.data_loader)
+
         self.model.train()
         self.train_metrics.reset()
         for batch_idx, (data, target) in enumerate(self.data_loader):
@@ -43,7 +66,6 @@ class Trainer(BaseTrainer):
             loss.backward()
             self.optimizer.step()
 
-            self.writer.set_step((epoch - 1) * self.len_epoch + batch_idx)
             self.train_metrics.update('loss', loss.item())
             for met in self.metric_ftns:
                 self.train_metrics.update(met.__name__, met(output, target))
@@ -53,10 +75,14 @@ class Trainer(BaseTrainer):
                     epoch,
                     self._progress(batch_idx),
                     loss.item()))
-                self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+                self.writer.add_image('input', make_grid(
+                    data.cpu(), nrow=8, normalize=True))
 
             if batch_idx == self.len_epoch:
                 break
+        
+        self.writer.next()
+        self.train_metrics.add_scalers()
         log = self.train_metrics.result()
 
         if self.do_validation:
@@ -83,15 +109,19 @@ class Trainer(BaseTrainer):
                 output = self.model(data)
                 loss = self.criterion(output, target)
 
-                self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')
                 self.valid_metrics.update('loss', loss.item())
                 for met in self.metric_ftns:
-                    self.valid_metrics.update(met.__name__, met(output, target))
-                self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
+                    self.valid_metrics.update(
+                        met.__name__, met(output, target))
+                self.writer.add_image('input', make_grid(
+                    data.cpu(), nrow=8, normalize=True))
 
         # add histogram of model parameters to the tensorboard
         for name, p in self.model.named_parameters():
             self.writer.add_histogram(name, p, bins='auto')
+        
+        self.writer.next('valid')
+        self.valid_metrics.add_scalers()
         return self.valid_metrics.result()
 
     def _progress(self, batch_idx):
