@@ -26,6 +26,19 @@ NWRD
     └── masks
 ```
 
+### Data Splits
+Here are the data splits of the NWRD dataset:
+|   Split   |   Percentage  |
+|-----------|-----------|
+|   Train + Valid   |   90      |
+|   Test    |   10      |
+|   Total   |   100     |
+
+The experimentation with 22 images was done with the following set of images:
+|   Split   |   Images  |
+|-----------|-----------|
+|   Train + Valid   | 2, 7, 14, 30, 64, 83, 84, 90, 94, 95, 100, 118, 124, 125, 132, 133, 136, 137, 138, 146 |
+|   Test    | 67, 123 |
 
 ## Requirements
 * Python
